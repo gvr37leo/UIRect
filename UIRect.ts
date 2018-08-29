@@ -24,9 +24,11 @@ class UIRect{
         ]
 
         parent.onchange.listen(r => {
-            var newanchors = this.anchorRel2Abs()
+            var newanchors = this.rel2Abs()
             this.handles[0].pos.set(newanchors[0])
             this.handles[1].pos.set(newanchors[1])
+            this.handles[2].pos.set(newanchors[2])
+            this.handles[3].pos.set(newanchors[3])
         })
 
         this.handles[0].pos.onchange.listen(v => {//anchor topleft abs
@@ -50,9 +52,9 @@ class UIRect{
 
     //for reading data from anchor handles into this datastructure
     anchorAbs2Rel(absAnchorA:Vector,absAnchorB:Vector):Rect{
-        absAnchorA.c().sub(this.parent.get().pos).div(this.parent.get().size)
-        absAnchorB.c().sub(this.parent.get().pos).div(this.parent.get().size)
-        return new Rect(absAnchorA,absAnchorA.to(absAnchorB))
+        var a = absAnchorA.c().sub(this.parent.get().pos).div(this.parent.get().size)
+        var b = absAnchorB.c().sub(this.parent.get().pos).div(this.parent.get().size)
+        return new Rect(a,a.to(b))
     }
 
     //for writing this datastructure to the handles
@@ -78,6 +80,16 @@ class UIRect{
     offsetRel2Abs():[Vector,Vector]{
         var absAnchors = this.anchorRel2Abs()
         return [
+            absAnchors[0].c().add(this.offsetRect.pos),
+            absAnchors[1].c().add(this.offsetRect.getPoint(new Vector(1,1))),
+        ]
+    }
+
+    rel2Abs():[Vector,Vector,Vector,Vector]{
+        var absAnchors = this.anchorRel2Abs()
+        return [
+            absAnchors[0],
+            absAnchors[1],
             absAnchors[0].c().add(this.offsetRect.pos),
             absAnchors[1].c().add(this.offsetRect.getPoint(new Vector(1,1))),
         ]
