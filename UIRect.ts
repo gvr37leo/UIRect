@@ -12,7 +12,7 @@ class UIRect{
     //transform rel to abs coordinates for handles
     //transform abs to rel coordinates for drawing
 
-    constructor(public anchorRect:Rect, public offsetRect:Rect, public parent:Rect){
+    constructor(public anchorRect:Rect, public offsetRect:Rect, public parent:Box<Rect>){
 
         var absAnchor = this.anchorRel2Abs()
         var absOffset = this.offsetRel2Abs()
@@ -22,29 +22,40 @@ class UIRect{
             new Handle(absOffset[0]),
             new Handle(absOffset[1]),
         ]
-    }
 
-    readHandles(){
-        
-        var anchorRect = this.anchorAbs2Rel(this.handles[0].pos.get(),this.handles[1].pos.get())
-        var offsetRect = this.offsetAbs2Rel(this.handles[2].pos.get(),this.handles[3].pos.get())
+        parent.onchange.listen(r => {
+            //update handles
+        })
 
-        this.anchorRect = anchorRect
-        this.offsetRect = offsetRect
+        this.handles[0].pos.onchange.listen(v => {//anchor
+
+        })
+
+        this.handles[1].pos.onchange.listen(v => {//anchor
+            
+        })
+
+        this.handles[2].pos.onchange.listen(v => {//offset
+            
+        })
+
+        this.handles[3].pos.onchange.listen(v => {//offset
+            
+        })
     }
 
     //for reading data from anchor handles into this datastructure
     anchorAbs2Rel(absAnchorA:Vector,absAnchorB:Vector):Rect{
-        absAnchorA.c().sub(this.parent.pos).div(this.parent.size)
-        absAnchorB.c().sub(this.parent.pos).div(this.parent.size)
+        absAnchorA.c().sub(this.parent.get().pos).div(this.parent.get().size)
+        absAnchorB.c().sub(this.parent.get().pos).div(this.parent.get().size)
         return new Rect(absAnchorA,absAnchorA.to(absAnchorB))
     }
 
     //for writing this datastructure to the handles
     anchorRel2Abs():[Vector,Vector]{
         return [
-            this.parent.getPoint(this.anchorRect.getPoint(new Vector(-1,-1))),
-            this.parent.getPoint(this.anchorRect.getPoint(new Vector( 1, 1))),
+            this.parent.get().getPoint(this.anchorRect.getPoint(new Vector(-1,-1))),
+            this.parent.get().getPoint(this.anchorRect.getPoint(new Vector( 1, 1))),
         ]
     }
 
@@ -63,8 +74,8 @@ class UIRect{
     offsetRel2Abs():[Vector,Vector]{
         var absAnchors = this.anchorRel2Abs()
         return [
-            absAnchors[0].add(this.offsetRect.pos),
-            absAnchors[1].add(this.offsetRect.getPoint(new Vector(1,1))),
+            absAnchors[0].c().add(this.offsetRect.pos),
+            absAnchors[1].c().add(this.offsetRect.getPoint(new Vector(1,1))),
         ]
     }
 
