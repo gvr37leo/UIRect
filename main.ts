@@ -16,18 +16,33 @@ var screenRect = new Rect(new Vector(0,0), screenSize)
 //aanpassingen aan de eigen handles wordt naar geluisterd door ditzelfde UIRect
 //en dit update de rects anchors en offsets
 //draw methode rekent de absolute rectangle uit met offsetRel2Abs
+var screenRectHandles = [
+    new Handle(new Vector(0,0)),
+    new Handle(screenSize.c()),
+]
 
+function updateParent(v:Vector){
+    var newrect = rectFromAbsPos(screenRectHandles[0].pos.get(),screenRectHandles[1].pos.get())
+    rect.parent.set(newrect)
+}
 
+screenRectHandles[0].pos.onchange.listen(updateParent)
+screenRectHandles[1].pos.onchange.listen(updateParent)
 
 var rect = new UIRect(
-    new Rect(new Vector(0,0), new Vector(0.5,0.5)),
-    new Rect(new Vector(-25,-25), new Vector(50,50)),
+    new Rect(new Vector(-1,0), new Vector(2,0)),
+    new Rect(new Vector(100,0), new Vector(-200,0)),
     new Box(screenRect)
 )
 
 
 loop((dt) => {
     ctxt.clearRect(0,0,screenSize.x,screenSize.y)
+
+    screenRectHandles.forEach(h => h.draw(ctxt))
     rect.draw(ctxt)
 })
 
+function rectFromAbsPos(a:Vector, b:Vector){
+    return new Rect(a.c(), a.to(b))
+}

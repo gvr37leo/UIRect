@@ -24,22 +24,26 @@ class UIRect{
         ]
 
         parent.onchange.listen(r => {
-            //update handles
+            var newanchors = this.anchorRel2Abs()
+            this.handles[0].pos.set(newanchors[0])
+            this.handles[1].pos.set(newanchors[1])
         })
 
-        this.handles[0].pos.onchange.listen(v => {//anchor
-
+        this.handles[0].pos.onchange.listen(v => {//anchor topleft abs
+            // var rect = this.anchorAbs2Rel(this.handles[0].pos.get(),this.handles[1].pos.get())
+            // this.anchorRect = rect
         })
 
-        this.handles[1].pos.onchange.listen(v => {//anchor
+        this.handles[1].pos.onchange.listen(v => {//anchor topright abs
+            // var rect = this.anchorAbs2Rel(this.handles[0].pos.get(),this.handles[1].pos.get())
+            // this.anchorRect = rect
+        })
+
+        this.handles[2].pos.onchange.listen(v => {//offset topleft abs
             
         })
 
-        this.handles[2].pos.onchange.listen(v => {//offset
-            
-        })
-
-        this.handles[3].pos.onchange.listen(v => {//offset
+        this.handles[3].pos.onchange.listen(v => {//offset topright abs
             
         })
     }
