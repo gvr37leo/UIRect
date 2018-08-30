@@ -35,12 +35,20 @@ var rect = new UIRect(
     new Box(screenRect)
 )
 
+var rect2 = new UIRect(
+    new Vector(0, 0.5), new Vector(1, 0.5),
+    new Vector(10,-10), new Vector(-10,10),
+    rect.absRect
+)
+
+
 
 loop((dt) => {
     ctxt.clearRect(0,0,screenSize.x,screenSize.y)
 
     screenRectHandles.forEach(h => h.draw(ctxt))
     rect.draw(ctxt)
+    rect2.draw(ctxt)
 })
 
 function rectFromAbsPos(a:Vector, b:Vector){

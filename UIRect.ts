@@ -6,14 +6,11 @@
 class UIRect{
 
     handles:Handle[]
-
-    //get in relative coordinates
-    //data is saved relatively
-    //transform rel to abs coordinates for handles
-    //transform abs to rel coordinates for drawing
+    readonly absRect:Box<Rect>
 
     constructor(public anchormin:Vector,public anchormax:Vector, public offsetmin:Vector, public offsetmax:Vector, public parent:Box<Rect>){
 
+        this.absRect = new Box(this.getAbsRect())
         var absAnchor = this.anchorRel2Abs()
         var absOffset = this.offsetRel2Abs()
         this.handles = [
@@ -46,6 +43,13 @@ class UIRect{
         this.anchormax = res[1]
         this.offsetmin = res[2]
         this.offsetmax = res[3]
+
+        this.absRect.set(this.getAbsRect())
+    }
+
+    getAbsRect():Rect{
+        var res = this.offsetRel2Abs()
+        return new Rect(res[0],res[0].to(res[1]))
     }
 
     //for reading data from anchor handles into this datastructure
