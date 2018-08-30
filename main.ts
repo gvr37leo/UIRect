@@ -30,8 +30,8 @@ screenRectHandles[0].pos.onchange.listen(updateParent)
 screenRectHandles[1].pos.onchange.listen(updateParent)
 
 var rect = new UIRect(
-    new Rect(new Vector(-1,0), new Vector(2,0)),
-    new Rect(new Vector(100,0), new Vector(-200,0)),
+    new Vector(0, 0.5), new Vector(1, 0.5),
+    new Vector(100,-50), new Vector(-100,50),
     new Box(screenRect)
 )
 

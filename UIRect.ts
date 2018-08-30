@@ -12,7 +12,7 @@ class UIRect{
     //transform rel to abs coordinates for handles
     //transform abs to rel coordinates for drawing
 
-    constructor(public anchorRect:Rect, public offsetRect:Rect, public parent:Box<Rect>){
+    constructor(public anchormin:Vector,public anchormax:Vector, public offsetmin:Vector, public offsetmax:Vector, public parent:Box<Rect>){
 
         var absAnchor = this.anchorRel2Abs()
         var absOffset = this.offsetRel2Abs()
@@ -24,65 +24,72 @@ class UIRect{
         ]
 
         parent.onchange.listen(r => {
-            var newanchors = this.rel2Abs()
-            this.handles[0].pos.set(newanchors[0])
-            this.handles[1].pos.set(newanchors[1])
-            this.handles[2].pos.set(newanchors[2])
-            this.handles[3].pos.set(newanchors[3])
+            var newhandles = this.rel2Abs()
+            this.handles[0].pos.set(newhandles[0])
+            this.handles[1].pos.set(newhandles[1])
+            this.handles[2].pos.set(newhandles[2])
+            this.handles[3].pos.set(newhandles[3])
         })
 
-        this.handles[0].pos.onchange.listen(v => {//anchor topleft abs
-            // var rect = this.anchorAbs2Rel(this.handles[0].pos.get(),this.handles[1].pos.get())
-            // this.anchorRect = rect
-        })
+        this.handles.forEach(h => h.pos.onchange.listen(this.readHandles))
+    }
 
-        this.handles[1].pos.onchange.listen(v => {//anchor topright abs
-            // var rect = this.anchorAbs2Rel(this.handles[0].pos.get(),this.handles[1].pos.get())
-            // this.anchorRect = rect
-        })
+    readHandles = () => {
+        var res = this.abs2Rel(
+            this.handles[0].pos.get(),
+            this.handles[1].pos.get(),
+            this.handles[2].pos.get(),
+            this.handles[3].pos.get(),
+        )
 
-        this.handles[2].pos.onchange.listen(v => {//offset topleft abs
-            
-        })
-
-        this.handles[3].pos.onchange.listen(v => {//offset topright abs
-            
-        })
+        this.anchormin = res[0]
+        this.anchormax = res[1]
+        this.offsetmin = res[2]
+        this.offsetmax = res[3]
     }
 
     //for reading data from anchor handles into this datastructure
-    anchorAbs2Rel(absAnchorA:Vector,absAnchorB:Vector):Rect{
+    anchorAbs2Rel(absAnchorA:Vector,absAnchorB:Vector):[Vector,Vector]{
         var a = absAnchorA.c().sub(this.parent.get().pos).div(this.parent.get().size)
         var b = absAnchorB.c().sub(this.parent.get().pos).div(this.parent.get().size)
-        return new Rect(a,a.to(b))
+        return [a,b]
     }
 
     //for writing this datastructure to the handles
     anchorRel2Abs():[Vector,Vector]{
         return [
-            this.parent.get().getPoint(this.anchorRect.getPoint(new Vector(-1,-1))),
-            this.parent.get().getPoint(this.anchorRect.getPoint(new Vector( 1, 1))),
+            this.parent.get().getPoint01(this.anchormin),
+            this.parent.get().getPoint01(this.anchormax),
         ]
     }
 
     //for reading data from offset handles into this datastructure
-    offsetAbs2Rel(absOffsetA:Vector,absOffsetB:Vector):Rect{
+    offsetAbs2Rel(absOffsetA:Vector,absOffsetB:Vector):[Vector,Vector]{
         var absAnchors = this.anchorRel2Abs()
         var absAnchorA = absAnchors[0]
         var absAnchorB = absAnchors[1]
 
         var posmin = absAnchorA.to(absOffsetA)
         var posmax = absAnchorB.to(absOffsetB)
-        return new Rect(posmin,posmin.to(posmax))
+        return [posmin,posmax]
     }
 
     //for writing this datastructure to the handles
     offsetRel2Abs():[Vector,Vector]{
         var absAnchors = this.anchorRel2Abs()
         return [
-            absAnchors[0].c().add(this.offsetRect.pos),
-            absAnchors[1].c().add(this.offsetRect.getPoint(new Vector(1,1))),
+            absAnchors[0].c().add(this.offsetmin),
+            absAnchors[1].c().add(this.offsetmax),
         ]
+    }
+
+    abs2Rel(absAnchorA:Vector,absAnchorB:Vector,absOffsetA:Vector,absOffsetB:Vector):[Vector,Vector,Vector,Vector]{
+ 
+        var anchorsrel = this.anchorAbs2Rel(absAnchorA,absAnchorB)
+
+        var posmin = absAnchorA.to(absOffsetA)
+        var posmax = absAnchorB.to(absOffsetB)
+        return [anchorsrel[0], anchorsrel[1], posmin, posmax]
     }
 
     rel2Abs():[Vector,Vector,Vector,Vector]{
@@ -90,8 +97,8 @@ class UIRect{
         return [
             absAnchors[0],
             absAnchors[1],
-            absAnchors[0].c().add(this.offsetRect.pos),
-            absAnchors[1].c().add(this.offsetRect.getPoint(new Vector(1,1))),
+            absAnchors[0].c().add(this.offsetmin),
+            absAnchors[1].c().add(this.offsetmax),
         ]
     }
 
